@@ -24,6 +24,7 @@ DESC fisica
 
 CREATE TABLE pes_fisicas OF fisica
 
+
 -- acrescentar chave primaria na tabela na coluna cdpessoa:
 
 alter table pes_fisicas add constraint pesfisica_pk primary key (cdpessoa)
@@ -37,25 +38,55 @@ insert into pes_fisicas values (1, 'Cariolando', '16236617859', 'M')
 select * from pes_fisicas
 
 -- TABELAS ANINHADAS
-/*
-Tabelas com colunas cujo tipo de dado de dominio é outra tabela.
-Criar uma tabela aninhada (coluna) chamada t_ende
-com a estrutura abaixo:
-*/
+
+--Tabelas com colunas cujo tipo de dado de dominio é outra tabela.
+
+-- Criar uma tabela aninhada (coluna) chamada t_ende com a estrutura abaixo:
+
+create or replace type t_ende as object (
+    logradouro varchar(60),
+    numero integer,
+    bairro varchar(50),
+    cidade varchar(50),
+    uf char(2),
+    cep char(9)
+);
+
+desc t_ende
 
 -- TABELAS ANINHADAS: Tabela criada como se fosse um tipo de dado de uma coluna da tabela:
  
 -- Criar um tipo de dado coluna chamado lista_ende com base na tabela aninhada t_ende:
 
+create type lista_ende as table of t_ende;
+
 -- ARRAY EM BANCO DE DADOS
 
 -- Criar um tipo de dados array chamado tele varchar(10) com 5 posicoes
 
+create type tele as varray(5) of varchar(14);
+
 -- Criar a tabela CLIENTE_LOJA com os tipos de dados COMPOSTO e ARRAY:
+
+create table clientes_loja (
+    cpf char(11) primary key,
+    nome varchar(50),
+    tel_cliente tele,
+    ende_cliente lista_ende
+)
+nested table ende_cliente store as end_clientes_tab;
 
 -- Inserir registro na tabela CLIENTE_LOJA
 
+insert into clientes_loja values(
+    '122233310', 'Gertrudes', tele('30304040', '54691789'),
+    lista_ende(
+        t_ende('rua intervalo', 1830, 'bairro 20 minutos', 'praia grande', 'sp', '11700-000')))
+
+
 -- Selecionar os registros:
+
+select c.cpf, c.nome, e.logradouro from clientes_loja c, table(c.ende_cliente) e;
 
 -- Exercicios: Teams
 
