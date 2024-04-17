@@ -136,3 +136,118 @@ BEGIN
     DELETE FROM produto WHERE id = v_id;
 COMMIT;
 END;
+
+-- 9) Criar um bloco que entre com o id do depto. e exiba o nome do depto, a soma salarial e a quantidade de funcionários do depto
+
+DECLARE
+    v_id    INTEGER := :id;
+    v_depto VARCHAR(30);
+    v_soma  NUMBER(8,2);
+    v_qtde  INTEGER;
+BEGIN
+    SELECT d.department_name, SUM(e.salary), COUNT(e.employee_id)
+        INTO v_depto, v_soma, v_qtde
+        FROM departments d, employees e
+    WHERE d.department_id = v_id AND d.department_id = e.department_id
+    GROUP BY d.department_name;
+
+    DBMS_OUTPUT.PUT_LINE(v_depto);
+    DBMS_OUTPUT.PUT_LINE(v_soma);
+    DBMS_OUTPUT.PUT_LINE(v_qtde);
+END;
+
+-- 10)Criar um bloco que entre com o código de um depto e exiba a qtde de empregados e a soma salarial
+
+DECLARE
+	v_id_depto	INTEGER := :id;
+	v_soma    	NUMBER(8,2);
+	v_qtde    	INTEGER;
+BEGIN
+	SELECT COUNT(employee_id), SUM(salary)
+	INTO  v_qtde, v_soma
+	FROM employees
+	WHERE department_id = v_id_depto;
+	DBMS_OUTPUT.PUT_LINE(v_id_depto);
+	DBMS_OUTPUT.PUT_LINE(v_soma);
+	DBMS_OUTPUT.PUT_LINE(v_qtde);
+END;
+
+-- 11)Criar um bloco para exibir o nome do empregado e o nome do depto. do id de empregado informado
+
+DECLARE
+	v_id	INTEGER := :id;
+	v_nome  employees.first_name%TYPE;
+	v_nome_depto  VARCHAR(30);
+BEGIN
+	SELECT e.employee_id, e.first_name,d.department_name
+	INTO  v_id, v_nome ,v_nome_depto
+	FROM employees e, departments d
+	WHERE v_id = e.employee_id
+	AND d.department_id = e.department_id;
+	DBMS_OUTPUT.PUT_LINE(v_nome);
+	DBMS_OUTPUT.PUT_LINE(v_nome_depto);
+END;
+
+-- 12)Crie um bloco PL/SQL que selecione o número máximo de departamento na tabela DEPARTMENTS e exibe resultado
+
+DECLARE
+    v_nome  VARCHAR(30);
+    v_id    INTEGER;
+BEGIN
+    SELECT MAX(department_id) INTO v_id FROM departments;
+    SELECT department_name INTO v_nome FROM departments
+        WHERE department_id = v_id;
+    
+    DBMS_OUTPUT.PUT_LINE(v_id || ' - ' || v_nome);
+END;
+
+
+-- 13)Criar um bloco anônimo que entre com o id de um empregado (EMPLOYEE_ID) e exiba o seu nome (FIRST_NAME), o titulo do cargo (JOB_TITLE) e o nome do departamento (DEPARTMENT_NAME). DICA: join.
+
+DECLARE
+    v_id INTEGER := :id;
+    v_nome VARCHAR (30);
+    v_cargo VARCHAR(30);
+    v_depto VARCHAR(30);
+
+BEGIN
+    SELECT e.first_name, j.job_title, d.department_name
+    INTO v_nome, v_cargo, v_depto
+    FROM employees e, jobs j, departments d 
+    WHERE e.employee_id = v_id 
+    AND j.job_id = e.job_id
+    AND d.department_id = e.department_id;
+
+ DBMS_OUTPUT.PUT_LINE(v_nome || ' - ' ||v_cargo || ' - ' ||v.depto);
+
+ END;
+
+-- 14)Criar um bloco que entre com o id do depto e retorne o nome do depto., o maior e o menor salario.
+
+DECLARE
+    v_id INTEGER := :id;
+    v_name VARCHAR(30);
+    v_max NUMBER(10, 2);
+    v_min NUMBER(10, 2);
+BEGIN
+    SELECT d.department_name, MAX(e.salary), MIN(e.salary)
+        INTO v_name, v_max, v_min
+        FROM employees e, departments d
+
+    WHERE d.department_id = v_id
+        AND e.department_id = d.department_id
+    GROUP BY d.department_name;
+
+    DBMS_OUTPUT.PUT_LINE('Maior' || v_max);
+    DBMS_OUTPUT.PUT_LINE('Menor' || v_min);
+
+END;
+
+
+
+
+-- 14)Criar um bloco que entre com o id do depto e retorne o nome do depto., o maior e o menor salario.
+
+
+
+
